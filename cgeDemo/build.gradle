@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+
+def usingCMakeCompile() {
+    /// define  gradle.ext.usingCMakeCompile = false to disable CMakeCompile Mode.
+    return gradle.ext != null && gradle.ext.has("usingCMakeCompile") && gradle.ext.usingCMakeCompile;
+}
+
+def usingCMakeCompileDebug() {
+    /// define  gradle.ext.usingCMakeCompileDebug = true to enable CMake Debug Mode.
+    return gradle.ext != null && gradle.ext.has("usingCMakeCompileDebug") && gradle.ext.usingCMakeCompileDebug;
+}
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+
+    if (usingCMakeCompile()) {
+        ndkVersion rootProject.ext.android.ndkVersion
+    }
+
+    defaultConfig {
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+        signingConfig signingConfigs.debug
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    namespace 'org.wysaid.cgeDemo'
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':library')
+    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.android.appcompatX
+}
